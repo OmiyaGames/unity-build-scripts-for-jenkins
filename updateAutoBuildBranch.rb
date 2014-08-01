@@ -13,5 +13,5 @@ puts REVISION
 puts TAG
 
 # Check all the branches
-allbranches = IO.popen([MERCURIAL, 'branch'])
+allbranches = IO.popen([MERCURIAL, 'branches'])
 puts allbranches.readlines
