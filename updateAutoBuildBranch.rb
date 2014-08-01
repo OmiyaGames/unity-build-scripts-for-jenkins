@@ -1,5 +1,5 @@
 # Import mercurial
-require 'win32-process'
+require 'win32/process'
 require 'mercurial-ruby'
 
 # Configure Mercurial to the proper location
