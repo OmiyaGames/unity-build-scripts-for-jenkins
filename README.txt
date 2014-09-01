@@ -1,5 +1,5 @@
-This series of scripts assist Jenkins continuous integration server running on Windows 7 to bundle builds from Unity projects into zip files.
-It also updates the Mercurial repository the project is based off of by creating a new tag.
+This series of scripts assist Jenkins continuous integration server's -- running on Windows 7 -- post-build process.
+It handles bundling builds from Unity projects into zip files, and creates a tag in the Mercurial repository.
 
 Note that these set of scripts require the following pre-requisites:
 
