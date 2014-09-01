@@ -1,3 +1,8 @@
+# This script zips any builds in a Unity Project's "Builds" folder
+#
+# It's based off of the Template Unity Project at BitBucket:
+# https://bitbucket.org/OmiyaGames/template-unity-project
+
 # Import modules
 require 'zip'
 

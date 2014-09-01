@@ -1,3 +1,9 @@
+# This script merges any changes in the branch Jenkins cloned into the "autobuild" branch,
+# and tags it with a simple message.
+#
+# If the repository doesn't have an "autobuild" branch yet,
+# this script will automatically create one before tagging it.
+
 # Setup constant values
 BRANCH_NAME = 'autobuild'
 REVISION = ARGV[0]
