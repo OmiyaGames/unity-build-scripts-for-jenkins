@@ -1,5 +1,6 @@
 This series of scripts assist Jenkins continuous integration server's -- running on Windows 7 -- post-build process.
 It handles bundling builds from Unity projects into zip files, and creates a tag in the Mercurial repository.
+The jenkins_settings.png photo contains an example of how one would use these scripts on a Jenkins project.
 
 Note that these set of scripts require the following pre-requisites:
 
