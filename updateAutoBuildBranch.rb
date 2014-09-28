@@ -6,8 +6,15 @@
 
 # Setup constant values
 BRANCH_NAME = 'autobuild'
-REVISION = ARGV[0]
-TAG_MESSAGE = ARGV[1]
+revision = nil
+tagMessage = nil
+if ARGV.length == 1
+	tagMessage = ARGV[0]
+elsif ARGV.length > 1
+	revision = ARGV[0]
+	tagMessage = ARGV[1]
+end
+if tagMessage.isNil?
 
 # Define helper methods
 def print_message(message)
@@ -47,22 +54,42 @@ if does_branch_autobuild_exist
 	# If it does, switch to this branch
 	run_command("hg up #{BRANCH_NAME}")
 
-	# Merge the changes from default, up to revision
-	run_command("hg merge -r #{REVISION}")
+	if revision
+		# Merge the changes from default, up to revision
+		run_command("hg merge -r #{revision}")
 
-	# Commit the changes from default, up to revision
-	run_command("hg commit -m \"Merging the default branch up to revision #{REVISION}.\"")
+		# Commit the changes from default, up to revision
+		run_command("hg commit -m \"Merging the default branch up to revision #{revision}.\"")
+	else
+		# Merge the changes from default
+		run_command("hg merge default")
+
+		# Commit the changes from default
+		run_command("hg commit -m \"Merging the default branch.\"")
+	end
 else
 
 	# If it does not, create a new branch
 	run_command("hg branch #{BRANCH_NAME}")
 
-	# Commit the changes from default, up to revision
-	run_command("hg commit -m \"Branching from the default branch at revision #{REVISION}.\"")
+	if revision
+		# Commit the changes from default, up to revision
+		run_command("hg commit -m \"Branching from the default branch at revision #{revision}.\"")
+	else
+		# Commit the changes from default
+		run_command("hg commit -m \"Branching from the default branch.\"")
+	end
 end
 
-# Tag this revision
-run_command("hg tag -f \"#{TAG_MESSAGE}\"")
+if tagMessage
+	# Tag this revision
+	run_command("hg tag -f \"#{tagMessage}\"")
+end
 
-# Push changes to the new branch
-run_command("hg push --new-branch -b #{BRANCH_NAME}")
+if does_branch_autobuild_exist
+	# Push changes to the branch
+	run_command("hg push -b #{BRANCH_NAME}")
+else
+	# Push changes to the new branch
+	run_command("hg push --new-branch -b #{BRANCH_NAME}")
+end
