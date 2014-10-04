@@ -13,7 +13,6 @@ FTP_URL = ARGV[1]
 USERNAME = ARGV[2]
 PASSWORD = ARGV[3]
 VERSION = ARGV[4]
-FTP_DIRECTORY = ARGV[5]
 
 # Change directory
 Dir.chdir(ARGV[0])
@@ -52,13 +51,6 @@ if webplayer_file and upload_folder and upload_file
 		
 		#Indicate we connected to the FTP site
 		puts "Connected to #{FTP_URL}!"
-		
-		# Change directory (if necessary
-		if !(FTP_DIRECTORY.nil? or FTP_DIRECTORY.empty?)
-			puts "Changing remote directory to \"#{FTP_DIRECTORY}\"..."
-			ftp.chdir(FTP_DIRECTORY)
-			puts "Changed to \"#{FTP_DIRECTORY}\"!"
-		end
 		
 		# Check if the folder to upload already exists
 		puts "Checking if remote directory \"#{upload_folder}\" already exists..."
