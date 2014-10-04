@@ -19,6 +19,7 @@ FTP_DIRECTORY = ARGV[5]
 Dir.chdir(ARGV[0])
 
 # Find all directories in this folder
+puts 'Searching for a webplayer build...'
 webplayer_file = nil
 upload_folder = nil
 upload_file = nil
@@ -34,37 +35,33 @@ for directory in Dir['*']
 		upload_folder = directory.sub(PLATFORM_STRING, '').to_slug
 		
 		# Determine the file name to upload this as
-		upload_file = 'webplayer-v' + VERSION + '.unity3d'
+		upload_file = 'webplayer-v' + VERSION.to_slug + '.unity3d'
 		
 		# Stop going through other directories
 		break
 	end
 end
 
-# For now, just print out a lot of stuff
-puts FTP_URL
-puts FTP_DIRECTORY
-puts USERNAME
-puts PASSWORD
-puts VERSION
-
 # Make sure we have a webplayer to upload
 if webplayer_file and upload_folder and upload_file
 
-	# For now, just print out a lot of stuff
-	puts webplayer_file
-	puts upload_folder
-	puts upload_file
-	
 	# Go to the FTP site
+	puts "Webplayer \"#{webplayer_file}\" found!"
+	puts "Connecting to #{FTP_URL}..."
 	Net::FTP.open(FTP_URL, USERNAME, PASSWORD) do |ftp|
+		
+		#Indicate we connected to the FTP site
+		puts "Connected to #{FTP_URL}!"
 		
 		# Change directory (if necessary
 		if !(FTP_DIRECTORY.nil? or FTP_DIRECTORY.empty?)
+			puts "Changing remote directory to \"#{FTP_DIRECTORY}\"..."
 			ftp.chdir(FTP_DIRECTORY)
+			puts "Changed to \"#{FTP_DIRECTORY}\"!"
 		end
 		
 		# Check if the folder to upload already exists
+		puts "Checking if remote directory \"#{upload_folder}\" already exists..."
 		folder_already_exists = false
 		for directory in ftp.nlst
 			if directory == upload_folder
@@ -74,12 +71,29 @@ if webplayer_file and upload_folder and upload_file
 		end
 		
 		# Create the folder remotely, if it hasn't already
-		ftp.mkdir(upload_folder) unless folder_already_exists
+		if folder_already_exists
+			puts "Remote directory \"#{upload_folder}\" exists!"
+		else
+			puts "Remote directory \"#{upload_folder}\" doesn't exist. Creating \"#{upload_folder}\"..."
+			ftp.mkdir(upload_folder)
+			puts "Created \"#{upload_folder}\"!"
+		end
 		
 		# Change to this directory
+		puts "Changing remote directory to \"#{upload_folder}\"..."
 		ftp.chdir(upload_folder)
+		puts "Changed to \"#{upload_folder}\"!"
 		
 		# Upload the new webplayer
+		puts "Uploading webplayer \"#{webplayer_file}\" as \"#{upload_file}\"..."
+		#uploaded_byte = 0
 		ftp.putbinaryfile(webplayer_file, upload_file)
+		puts "Upload \"#{upload_file}\" complete!"
 	end
+else
+	# Indicate there were no webplayers found
+	puts 'No webplayer found! Ending FTP upload process...'
 end
+
+# Indicate completion
+puts 'FTP upload process complete!'
