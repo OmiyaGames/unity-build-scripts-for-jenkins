@@ -5,14 +5,15 @@
 
 # Import modules
 require 'net/ftp'
-require 'string-urlize'
+require 'to_slug'
 
 # Define constants
 PLATFORM_STRING = ' (Web)'
-VERSION = ARGV[1]
-FTP_DIRECTORY = ARGV[2]
-USERNAME = ARGV[3]
-PASSWORD = ARGV[4]
+FTP_URL = ARGV[1]
+USERNAME = ARGV[2]
+PASSWORD = ARGV[3]
+VERSION = ARGV[4]
+FTP_DIRECTORY = ARGV[5]
 
 # Change directory
 Dir.chdir(ARGV[0])
@@ -30,10 +31,7 @@ for directory in Dir['*']
 		webplayer_file = directory + '/' + directory + '.unity3d'
 		
 		# Grab the folder name to upload to
-		upload_folder = directory.sub(PLATFORM_STRING, '').urlize
-		
-		# Change it to a url-friendly name
-		upload_folder = FTP_DIRECTORY + '/' + upload_folder
+		upload_folder = directory.sub(PLATFORM_STRING, '').to_slug
 		
 		# Determine the file name to upload this as
 		upload_file = 'webplayer-v' + VERSION + '.unity3d'
@@ -44,10 +42,11 @@ for directory in Dir['*']
 end
 
 # For now, just print out a lot of stuff
-puts VERSION
+puts FTP_URL
 puts FTP_DIRECTORY
 puts USERNAME
 puts PASSWORD
+puts VERSION
 
 # Make sure we have a webplayer to upload
 if webplayer_file and upload_folder and upload_file
@@ -56,4 +55,31 @@ if webplayer_file and upload_folder and upload_file
 	puts webplayer_file
 	puts upload_folder
 	puts upload_file
+	
+	# Go to the FTP site
+	Net::FTP.open(FTP_URL, USERNAME, PASSWORD) do |ftp|
+		
+		# Change directory (if necessary
+		if !(FTP_DIRECTORY.nil? or FTP_DIRECTORY.empty?)
+			ftp.chdir(FTP_DIRECTORY)
+		end
+		
+		# Check if the folder to upload already exists
+		folder_already_exists = false
+		for directory in ftp.nlst
+			if directory == upload_folder
+				folder_already_exists = true
+				break
+			end
+		end
+		
+		# Create the folder remotely, if it hasn't already
+		ftp.mkdir(upload_folder) unless folder_already_exists
+		
+		# Change to this directory
+		ftp.chdir(upload_folder)
+		
+		# Upload the new webplayer
+		ftp.putbinaryfile(webplayer_file, upload_file)
+	end
 end
