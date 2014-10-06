@@ -14,7 +14,6 @@ elsif ARGV.length > 1
 	revision = ARGV[0]
 	tagMessage = ARGV[1]
 end
-if tagMessage.isNil?
 
 # Define helper methods
 def print_message(message)
